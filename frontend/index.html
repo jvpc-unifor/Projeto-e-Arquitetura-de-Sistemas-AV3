@@ -162,7 +162,8 @@
                 // Simula um delay pequeno de rede para dar sensação de "sistema real"
                 // await new Promise(r => setTimeout(r, 500)); 
 
-                const response = await fetch('http://localhost:8081/listUsers');
+                //const response = await fetch('http://localhost:8081/listUsers');
+                const response = await fetch('https://backend-arquitetura-de-sistemas-av3.onrender.com/listUsers');
                 
                 if (!response.ok) throw new Error('Falha na comunicação com a API');
 
