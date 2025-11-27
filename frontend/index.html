@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Usuários | Arquitetura</title>
+    <style>
+        /* Reset básico e Variáveis */
+        :root {
+            --primary-color: #4a90e2;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #333;
+            --secondary-text: #666;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        /* Navbar estilo "Admin" */
+        .navbar {
+            background-color: #fff;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 { font-size: 1.2rem; color: var(--primary-color); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .status-badge { font-size: 0.8rem; background: #e1ecf4; color: #4a90e2; padding: 4px 8px; border-radius: 4px; }
+
+        /* Container Principal */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* Cabeçalho da Seção */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-header h2 { font-weight: 400; color: #444; }
+
+        /* Botão de Ação */
+        .btn-load {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.1s;
+            box-shadow: 0 2px 5px rgba(74, 144, 226, 0.3);
+        }
+
+        .btn-load:hover { background-color: #357abd; transform: translateY(-1px); }
+        .btn-load:active { transform: translateY(0); }
+
+        /* Grid de Cards */
+        .grid-users {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        /* Estilo do Card */
+        .user-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--primary-color);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+            color: #999;
+        }
+
+        .user-name { font-size: 1.1rem; font-weight: 600; margin-bottom: 5px; }
+        .user-role { color: var(--secondary-text); font-size: 0.95rem; display: flex; align-items: center; gap: 5px; }
+        
+        /* Simulação de Avatar */
+        .avatar-circle {
+            width: 40px; 
+            height: 40px; 
+            background: #eee; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            font-weight: bold;
+            color: #555;
+            margin-right: 10px;
+        }
+        
+        .user-info-row { display: flex; align-items: center; margin-bottom: 10px; }
+
+        /* Feedback visual */
+        #feedback-msg { text-align: center; color: #666; margin-top: 2rem; font-style: italic; }
+
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <h1>SysAdmin <span style="font-weight: 300;">Layers</span></h1>
+        <span class="status-badge">API Status: Online</span>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <div>
+                <h2>Lista de Colaboradores</h2>
+                <p style="color: #888; font-size: 0.9rem;">Gerenciamento via Camada de Serviços</p>
+            </div>
+            <button class="btn-load" onclick="carregarUsuarios()">
+                <svg style="width:12px; margin-right:5px;" fill="white" viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+                Sincronizar Dados
+            </button>
+        </div>
+
+        <div id="grid-users" class="grid-users">
+            </div>
+        
+        <p id="feedback-msg">Nenhum dado carregado. Clique no botão para iniciar a requisição ao Back-end.</p>
+    </div>
+
+    <script>
+        async function carregarUsuarios() {
+            const grid = document.getElementById('grid-users');
+            const feedback = document.getElementById('feedback-msg');
+            
+            // Feedback visual de carregamento
+            feedback.innerHTML = "Comunicando com a Camada de Serviço...";
+            feedback.style.display = "block";
+            grid.innerHTML = "";
+
+            try {
+                // Simula um delay pequeno de rede para dar sensação de "sistema real"
+                // await new Promise(r => setTimeout(r, 500)); 
+
+                const response = await fetch('http://localhost:8081/listUsers');
+                
+                if (!response.ok) throw new Error('Falha na comunicação com a API');
+
+                const usuarios = await response.json();
+                
+                feedback.style.display = "none"; // Esconde mensagem de carregamento
+
+                // Lógica de renderização
+                for (const key in usuarios) {
+                    const user = usuarios[key];
+                    const initials = user.name.substring(0,2).toUpperCase(); // Pega iniciais para o avatar
+
+                    const card = document.createElement('div');
+                    card.className = 'user-card';
+                    
+                    // Template String com estrutura HTML mais elaborada
+                    card.innerHTML = `
+                        <div class="card-header">
+                            <span>ID: #${user.id}</span>
+                            <span style="color:green">● Ativo</span>
+                        </div>
+                        <div class="user-info-row">
+                            <div class="avatar-circle">${initials}</div>
+                            <div>
+                                <div class="user-name">${user.name}</div>
+                                <div class="user-role">${user.profession}</div>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                }
+
+            } catch (error) {
+                console.error(error);
+                feedback.innerHTML = "⚠️ Erro: Não foi possível conectar ao Servidor Node.js.";
+                feedback.style.color = "red";
+            }
+        }
+    </script>
+</body>
+</html>

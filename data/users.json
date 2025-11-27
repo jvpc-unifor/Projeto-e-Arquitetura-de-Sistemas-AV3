@@ -1,0 +1,43 @@
+{
+   "user1" : {
+      "name" : "mahesh",
+      "password" : "password1",
+      "profession" : "teacher",
+      "id": 1
+   },
+   
+   "user2" : {
+      "name" : "suresh",
+      "password" : "password2",
+      "profession" : "librarian",
+      "id": 2
+   },
+   
+   "user3" : {
+      "name" : "ramesh",
+      "password" : "password3",
+      "profession" : "clerk",
+      "id": 3
+   },
+   
+   "user4" : {
+      "name" : "João Victor Passos Cavalcante",
+      "password" : "2422766",
+      "profession" : "estudante",
+      "id": 4
+   },
+   
+   "user5" : {
+      "name" : "Prof. Americo",
+      "password" : "unifor",
+      "profession" : "Professor",
+      "id": 5
+   },
+   
+   "user6" : {
+      "name" : "Aluno",
+      "password" : "unifor2",
+      "profession" : "estudante",
+      "id": 5
+   }
+}
